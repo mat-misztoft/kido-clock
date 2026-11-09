@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kido Clock - web installer</title>
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; color: #222; }
+    h1 { font-size: 1.6rem; }
+    code { background: #f0f0f0; padding: 1px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>🌙 Kido Clock - web installer</h1>
+  <p>Flash the Kido Clock firmware to an <b>ESP32-C3 SuperMini</b> straight from the browser.
+     Use <b>Chrome or Edge</b> on a desktop (Web Serial is required).</p>
+  <ol>
+    <li>Plug the board in with a USB-C data cable.</li>
+    <li>Click the button below and pick the board's serial port.</li>
+    <li>If the board is not detected: hold <b>BOOT</b>, tap <b>RST</b>, release <b>BOOT</b>, then try again.</li>
+  </ol>
+  <esp-web-install-button manifest="manifest.json"></esp-web-install-button>
+  <p>After flashing, connect to the Wi-Fi network <code>Kido-Clock-Setup</code> to set up Wi-Fi
+     and choose the clock's language, then open <code>http://kido-clock.local</code>.</p>
+  <p><b>Updating from 1.0.x?</b> Version 1.1 uses a new partition layout (no OTA, room for colour icons),
+     so the daily plan and the saved Wi-Fi network are reset once. Save your plan first from
+     <code>http://kido-clock.local/api/config</code> if you want to re-create it.</p>
+  <p><small>This page must be served over HTTPS (for example GitHub Pages) with
+     <code>manifest.json</code> and <code>kido-clock-esp32c3-merged.bin</code> next to it.</small></p>
+</body>
+</html>

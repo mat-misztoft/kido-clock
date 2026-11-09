@@ -1,0 +1,17 @@
+#,Part,Function,Required,Qty / device,Shop (PL),Link (PL),PL price per pack [PLN gross],Pcs per pack,PL cost / device [PLN],PL price status,AliExpress link,Ali price per pc [USD],Ali cost / device [USD],Ali cost / device [PLN],Ali price status,"Prototype, screen on hand, PL [PLN]","Prototype, screen on hand, Ali [USD]"
+1,"ESP32-C3 SuperMini (ESP32-C3FN4, 4 MB flash, USB-C)","MCU, Wi-Fi, NTP, web server",yes,1,Gotronik,https://www.gotronik.pl/plytka-deweloperska-esp32-c3-supermini-wifi-bluetooth-risc-v-p-15201.html,22.00,1,22.00,"verified (product page, 2026-10-13)",https://www.aliexpress.us/item/3256806205678831.html,3.00,3.00,11.77,"from search results (typically 1.45-3.00 USD), listing not opened",22.00,3.00
+2,"2.0"" IPS TFT 240x320 SPI, ST7789 (e.g. Waveshare 17344)",display,yes,1,Kamami,https://kamami.pl/wyswietlacze-tftips/1182299-waveshare-17344-240-320-general-2inch-ips-lcd-display-module-5906623425068.html,44.43,1,44.43,"verified (Kamami, incl. PH2.0 8-pin cable)",https://www.aliexpress.com/w/wholesale-2.0-inch-st7789-240x320-ips.html,4.56,4.56,17.90,from search results; check 'IPS' and 'SPI' in the listing,0.00,0.00
+3,Photoresistor GL5528 10-20 kOhm (pack of 10),auto-dimming (optional),optional,1,Botland,https://botland.com.pl/fotorezystory/4598-fotorezystor-10-20k-gl5528-10szt-5903351245715.html,4.90,10,0.49,"verified (Botland, 4.90 PLN / 10 pcs)",https://www.aliexpress.com/w/wholesale-GL5528.html,0.05,0.05,0.20,ESTIMATE,0.49,0.05
+4,Resistor 10 kOhm 0.25 W,LDR divider (optional),optional,1,any shop,https://botland.com.pl/szukaj?s=rezystor+10k,0.10,1,0.10,ESTIMATE (usually sold in packs),https://www.aliexpress.com/w/wholesale-10k-resistor.html,0.02,0.02,0.08,ESTIMATE,0.10,0.02
+5,Tact switch 6x6 mm THT (pack of 5),button: light up / Wi-Fi reset (optional),optional,1,Botland,https://botland.com.pl/tact-switch/3495-tact-switch-6x6mm-5mm-tht-2pin-5szt-5904422307639.html,1.99,5,0.40,"verified (Botland, 1.99 PLN / 5 pcs)",https://www.aliexpress.com/w/wholesale-tact-switch-6x6.html,0.03,0.03,0.12,ESTIMATE,0.40,0.03
+6,Female-female jumper wires 10 cm (pack of 40),display-to-board wiring (no soldering),yes,10,Botland,https://botland.com.pl/przewody-polaczeniowe-zensko-zenskie/19948-przewody-polaczeniowe-zensko-zenskie-justpi-10cm-40szt-5904422328672.html,4.99,40,1.25,"verified (Botland, 4.99 PLN / 40 pcs)",https://www.aliexpress.com/w/wholesale-dupont-female-female-10cm.html,0.03,0.30,1.18,ESTIMATE,1.25,0.30
+7,USB-A to USB-C cable 1 m,5 V power,yes,1,any shop,,10.00,1,10.00,ESTIMATE,https://www.aliexpress.com/w/wholesale-usb-c-cable-1m.html,1.50,1.50,5.89,ESTIMATE,10.00,1.50
+8,3D-printed PLA enclosure (~40 g) + 2x M2 screws,enclosure,yes,1,self-printed,,5.00,1,5.00,ESTIMATE (PLA ~80 PLN/kg),,1.27,1.27,4.98,ESTIMATE,5.00,1.27
+,TOTAL parts,,,,,,,,83.67,,,,10.73,42.11,,39.24,6.17
+,Shipping (ESTIMATE),,,,,,,,42.00,,,,2.00,7.85,,28.00,2.00
+
+Scenario,Landed [PLN],Landed [USD],Net price 40% margin [PLN],[USD],Gross incl. VAT [PLN]
+"A. Prototype, screen on hand, PL",67.24,17.13,112.06,28.55,137.83
+B. PL batch 10,87.87,22.39,146.44,37.31,180.12
+"C. Prototype, screen on hand, Ali",32.06,8.17,53.44,13.62,65.73
+D. Ali batch 10,42.90,10.93,71.49,18.22,87.94

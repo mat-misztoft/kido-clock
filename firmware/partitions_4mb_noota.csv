@@ -1,0 +1,8 @@
+# Kido Clock partition table for 4 MB flash (ESP32-C3 SuperMini, also used for ESP32-S3).
+# No OTA: one large app slot for the firmware with its built-in colour icons,
+# and LittleFS for the settings (and room for future custom icons).
+# nvs stays at the usual offset/size, so saved Wi-Fi credentials survive the switch.
+# Name,   Type, SubType, Offset,   Size,     Flags
+nvs,      data, nvs,     0x9000,   0x5000,
+app0,     app,  factory, 0x10000,  0x300000,
+spiffs,   data, spiffs,  0x310000, 0xF0000,

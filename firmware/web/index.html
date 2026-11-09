@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kido Clock</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,/*@FAVICON@*/">
+<link rel="apple-touch-icon" href="data:image/png;base64,/*@FAVICON@*/">
+<style>
+
+:root{
+  --bg:#eceef2;
+  --surface:#ffffff;
+  --ink:#1a1d23;
+  --mut:#555e6a;
+  --line:#dde1e8;
+  --soft:#e8ebf0;
+  --pri:#d62828;
+  --pri-ink:#ffffff;
+  --del:#b42318;
+  --del-bg:#fceceb;
+  --screen:#121417;
+  --r:16px;
+  --sh:0 1px 2px rgba(40,36,30,.05),0 8px 20px rgba(40,36,30,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.4;-webkit-font-smoothing:antialiased}
+::selection{background:#d6282833}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:16px 18px;background:#fff;border-bottom:1px solid var(--line)}
+.brand{flex:1;min-width:0}
+.brand h1{margin:0;font-size:19px;font-weight:600;letter-spacing:-.015em}
+.brand .meta{margin-top:2px;font-size:12px;color:var(--mut);font-weight:500}
+.screen{width:62px;height:62px;border-radius:50%;background:var(--screen);color:#f3f3f3;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none;padding:8px;box-shadow:inset 0 0 0 1px #333,0 1px 2px rgba(0,0,0,.2)}
+#now{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.03em;line-height:1.1}
+#nowsub{display:none}
+main{max-width:640px;margin:0 auto;padding:16px 14px 36px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:0 0 10px;box-shadow:var(--sh)}
+.card > .slot{position:relative}
+
+.slot{display:flex;gap:12px;align-items:center}
+.slot canvas{border-radius:50%;flex:none;border:2px solid var(--ink);background:var(--ink)}
+.slot .info{flex:1;min-width:0}
+.slot .t{font-size:20px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.slot .d{font-size:13px;color:var(--mut);margin-top:2px}
+.slot .l{font-size:14px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot.active{border-color:#d6282866;box-shadow:0 0 0 3px #d6282814,var(--sh)}
+.badge{display:inline-block;background:var(--pri);color:#fff;font-size:11px;font-weight:650;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.btns{display:flex;flex-direction:column;gap:6px}
+button{font:inherit;border:0;border-radius:999px;padding:9px 14px;background:var(--soft);color:var(--ink);cursor:pointer;font-weight:600;font-size:13px}
+button:active{opacity:.88}
+button.pri{background:var(--pri);color:var(--pri-ink)}
+button.del{background:var(--del-bg);color:var(--del)}
+button.big{width:100%;padding:13px 16px;font-size:15px;font-weight:650;margin-top:4px}
+h2{font-size:13px;margin:22px 2px 8px;color:var(--mut);font-weight:650;letter-spacing:.02em}
+.sec:first-child h2{margin-top:6px}
+.sech{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;padding:6px 2px;cursor:pointer;font-weight:600;font-size:13px;color:var(--ink);letter-spacing:.01em}
+.sech:focus-visible{outline:2px solid var(--pri);outline-offset:3px;border-radius:6px}
+.sech::after{content:"";margin-left:auto;width:7px;height:7px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);opacity:.7}
+.sech[aria-expanded=false]::after{transform:rotate(-45deg)}
+.secb[hidden]{display:none}
+label{display:block;font-size:14px;margin:12px 0 6px;font-weight:500}
+input[type=time],input[type=text],select{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;width:100%;background:#fff;color:var(--ink)}
+input[type=time]:focus,input[type=text]:focus,select:focus{outline:2px solid #d6282844;border-color:#d6282888}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.row{display:flex;gap:10px;align-items:center}
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.days label{margin:0;display:flex;align-items:center;justify-content:center;width:40px;height:38px;border-radius:999px;background:var(--soft);font-size:13px;cursor:pointer;user-select:none;font-weight:600}
+.days input{display:none}
+.days input:checked+span{color:#fff}
+.days label:has(input:checked){background:var(--pri);color:#fff}
+.presets{display:flex;gap:6px;margin-top:8px}
+.presets button{padding:7px 12px;font-size:13px}
+.icons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.icons div{border-radius:14px;padding:6px 4px;text-align:center;font-size:12px;cursor:pointer;border:2px solid transparent;background:var(--soft)}
+.icons div.sel{border-color:var(--pri);background:#fff}
+.icons canvas{width:100%;border-radius:50%;display:block}
+.colors{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.colors label{display:flex;align-items:center;gap:8px;margin:0;background:var(--soft);border-radius:12px;padding:8px;font-weight:500}
+.colors input{width:44px;height:34px;border:0;padding:0;background:none}
+#editor{position:fixed;inset:0;background:rgba(18,20,23,.45);display:none;z-index:10;overflow:auto}
+#editor .sheet{background:var(--bg);max-width:640px;margin:16px auto;border-radius:20px;padding:16px;border:1px solid var(--line);box-shadow:var(--sh)}
+.prevwrap{display:flex;justify-content:center;margin:4px 0 10px}
+#bigprev,#eyesprev{border-radius:50%;border:4px solid var(--ink);background:var(--ink);box-shadow:var(--sh)}
+#bigprev{width:200px;height:200px;border-width:6px}
+#eyesprev{width:150px;height:150px}
+.mut{color:var(--mut);font-size:13px;line-height:1.45}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;display:none;z-index:20;font-size:14px;font-weight:500;box-shadow:var(--sh)}
+.chk{display:flex;align-items:center;gap:10px;margin:12px 0;font-size:15px}
+.chk input{width:20px;height:20px;accent-color:var(--pri)}
+.foot{text-align:center;margin:28px 0 0;font-size:12px;color:var(--mut);font-weight:500;letter-spacing:.04em}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><h1>Kido Clock</h1><div class="meta">MSK-01</div></div>
+  <div class="screen" aria-hidden="true"><div id="now">--:--</div><div id="nowsub" data-i18n="connecting">connecting…</div></div>
+</header>
+<main>
+  <section class="sec" data-sec="plan" data-open="1">
+  <h2><button class="sech" type="button"><span data-i18n="plan">Daily plan</span></button></h2>
+  <div class="secb">
+  <div id="slots"></div>
+  <button class="big" onclick="editSlot(-1)" data-i18n="add_slot">+ Add time slot</button>
+  </div></section>
+
+  <section class="sec" data-sec="display">
+  <h2><button class="sech" type="button"><span data-i18n="brightness">Screen brightness</span></button></h2>
+  <div class="secb"><div class="card">
+    <label><span data-i18n="max_bright">Maximum brightness:</span> <b id="maxv"></b></label>
+    <input type="range" id="maxBright" min="5" max="100" oninput="cfg.maxBright=+this.value;upd()">
+    <div class="mut" data-i18n="max_bright_help"></div>
+    <div class="chk"><input type="checkbox" id="autoDim" onchange="cfg.autoDim=this.checked"><span data-i18n="auto_dim"></span></div>
+    <div class="chk"><input type="checkbox" id="showClock" onchange="cfg.showClock=this.checked;renderSlots()"><span data-i18n="show_clock"></span></div>
+    <div class="chk"><input type="checkbox" id="showLabel" onchange="cfg.showLabel=this.checked;renderSlots()"><span data-i18n="show_label"></span></div>
+    <label data-i18n="clock_style"></label>
+    <select id="clockStyle" onchange="cfg.clockStyle=this.value;renderSlots()"><option value="digital" data-i18n="clock_digital"></option><option value="analog" data-i18n="clock_analog"></option></select>
+    <div class="mut" data-i18n="clock_style_help"></div>
+  </div></div></section>
+
+  <section class="sec" data-sec="colours">
+  <h2><button class="sech" type="button"><span data-i18n="colours_title">Colours</span></button></h2>
+  <div class="secb"><div class="card">
+    <div id="panelBox">
+      <label data-i18n="panel_profile"></label>
+      <select id="panel" onchange="cfg.panel=this.value;tryDisplay()"><option value="standard" data-i18n="panel_standard"></option><option value="vivid" data-i18n="panel_vivid"></option><option value="extra" data-i18n="panel_extra"></option></select>
+      <div class="mut" data-i18n="panel_help"></div>
+    </div>
+    <label><span data-i18n="vivid">Vivid colours:</span> <b id="vivv"></b></label>
+    <input type="range" id="vivid" min="0" max="100" step="5" oninput="cfg.vivid=+this.value;vivUpd();renderSlots();tryDisplay()">
+    <div class="mut" data-i18n="vivid_help"></div>
+  </div></div></section>
+
+  <section class="sec" data-sec="eyes">
+  <h2><button class="sech" type="button"><span data-i18n="saver_title">Screensaver</span></button></h2>
+  <div class="secb"><div class="card">
+    <div class="prevwrap"><canvas id="eyesprev" width="240" height="240" style="border-radius:50%;border:6px solid #222;width:150px;height:150px"></canvas></div>
+    <div class="mut" data-i18n="saver_help"></div>
+    <label data-i18n="saver_mode"></label>
+    <select id="saver" onchange="cfg.saver=this.value;cfg.eyes.on=this.value==='eyes';saverUi()"><option value="off" data-i18n="saver_off"></option><option value="eyes" data-i18n="saver_eyes"></option><option value="clock" data-i18n="saver_clock"></option></select>
+    <label data-i18n="eyes_idle"></label>
+    <select id="eyIdle" onchange="cfg.eyes.idle=+this.value"></select>
+    <div id="eyesOpts">
+    <div class="colors">
+      <label><input type="color" id="eyColor" oninput="cfg.eyes.color=this.value"><span data-i18n="eyes_color"></span></label>
+      <label><input type="color" id="eyBg" oninput="cfg.eyes.bg=this.value"><span data-i18n="eyes_bg"></span></label>
+    </div>
+    <label data-i18n="eyes_shape"></label>
+    <select id="eyShape" onchange="cfg.eyes.shape=this.value"><option value="round" data-i18n="shape_round"></option><option value="rect" data-i18n="shape_rect"></option></select>
+    <label><span data-i18n="eyes_speed"></span> <b id="eySv"></b></label>
+    <input type="range" id="eySpeed" min="50" max="200" step="10" oninput="cfg.eyes.speed=+this.value;eyUpd()">
+    <label data-i18n="eyes_night"></label>
+    <select id="eyNight" onchange="cfg.eyes.night=this.value"><option value="off" data-i18n="night_off"></option><option value="sleepy" data-i18n="night_sleepy"></option></select>
+    <div class="chk"><input type="checkbox" id="eyClock" onchange="cfg.eyes.clock=this.checked"><span data-i18n="eyes_clock"></span></div>
+    <button style="width:100%" onclick="eyesPreview()" data-i18n="eyes_show"></button>
+    </div>
+  </div></div></section>
+
+  <section class="sec" data-sec="language">
+  <h2><button class="sech" type="button"><span data-i18n="language">Language</span></button></h2>
+  <div class="secb"><div class="card">
+    <select id="lang" aria-labelledby="sech-language" onchange="cfg.lang=this.value;applyLang()"></select>
+  </div></div></section>
+
+  <section class="sec" data-sec="device">
+  <h2><button class="sech" type="button"><span data-i18n="device_title">Wi-Fi and device</span></button></h2>
+  <div class="secb"><div class="card">
+    <p class="mut" style="margin:4px 0 10px">kido-clock.local · v<span id="ver"></span></p>
+    <button style="width:100%" onclick="wifiReset()" data-i18n="change_wifi">change Wi-Fi network</button>
+  </div></div></section>
+
+  <button class="big pri" style="margin-top:14px" onclick="save()" data-i18n="save">💾 Save to device</button>
+  <p class="foot">MSK-01</p>
+</main>
+
+<div id="editor"><div class="sheet">
+  <div class="row"><h2 style="flex:1;margin:4px" id="edtitle"></h2><button onclick="closeEd()">✕</button></div>
+  <div class="prevwrap"><canvas id="bigprev" width="240" height="240"></canvas></div>
+  <label data-i18n="from_time"></label>
+  <input type="time" id="e_start" oninput="ed.start=this.value;drawBig()">
+  <label data-i18n="weekdays"></label>
+  <div class="days" id="e_days"></div>
+  <div class="presets">
+    <button onclick="setDays(127)" data-i18n="every_day"></button><button onclick="setDays(31)" data-i18n="mon_fri"></button><button onclick="setDays(96)" data-i18n="weekend"></button>
+  </div>
+  <label data-i18n="icon"></label>
+  <div class="icons" id="e_icons"></div>
+  <label data-i18n="colors"></label>
+  <div class="mut" data-i18n="bitmap_colors_note"></div>
+  <div class="colors">
+    <label><input type="color" id="e_bg" oninput="ed.bg=this.value;drawBig()"><span data-i18n="c_bg"></span></label>
+    <label><input type="color" id="e_tx" oninput="ed.tx=this.value;drawBig()"><span data-i18n="c_tx"></span></label>
+  </div>
+  <button style="margin-top:8px" onclick="resetColors()" data-i18n="reset_colors"></button>
+  <label data-i18n="label_opt"></label>
+  <input type="text" id="e_label" maxlength="24" oninput="ed.label=this.value;drawBig()" data-i18n-ph="label_ph">
+  <label><span data-i18n="slot_bright"></span> <b id="e_bv"></b></label>
+  <input type="range" id="e_bright" min="0" max="100" oninput="ed.bright=+this.value;document.getElementById('e_bv').textContent=this.value+'%';drawBig()">
+  <div class="mut" data-i18n="slot_bright_help"></div>
+  <div class="row" style="margin-top:14px">
+    <button class="pri big" onclick="applyEd()" data-i18n="done"></button>
+  </div>
+  <p class="mut" data-i18n="save_hint"></p>
+</div></div>
+<div id="toast"></div>
+
+<script>
+const ICONS=/*@ICONS@*/null;
+const LAYOUTS=/*@LAYOUTS@*/null;
+const I18N=/*@I18N@*/null;          // generated from lang/*.json
+const DEFAULT_LANG=/*@DEFAULT_LANG@*/null;
+const VERSION=/*@VERSION@*/null;
+let cfg=null, status=null, ed=null, edIdx=-1, lang=DEFAULT_LANG;
+
+function T(k){const L=I18N[lang]||I18N.en;return k in L?L[k]:(I18N.en[k]??k)}
+function applyLang(){
+  lang=I18N[cfg&&cfg.lang]?cfg.lang:DEFAULT_LANG; document.documentElement.lang=lang;
+  document.querySelectorAll('[data-i18n]').forEach(e=>e.textContent=T(e.dataset.i18n));
+  document.querySelectorAll('[data-i18n-ph]').forEach(e=>e.placeholder=T(e.dataset.i18nPh));
+  const sel=document.getElementById('lang');
+  if(!sel.options.length)for(const c in I18N)sel.add(new Option(I18N[c]._name,c));
+  sel.value=lang; if(cfg){renderSlots();showTime()}
+}
+// Same default plan as configDefaults() in src/config.cpp
+function demo(){const D=I18N[lang]._labels,S=(start,days,icon,bright,label)=>Object.assign({start,days,icon,bright,label},ICONS[icon].defaults);
+ return {v:1,lang:lang,maxBright:100,autoDim:false,showClock:true,showLabel:false,clockStyle:"digital",saver:"eyes",slots:[
+ S("06:45",31,"sun3d",100,D.lbl_wake),S("07:30",96,"sun3d",100,D.lbl_wake),S("18:30",127,"openbook3d",70,D.lbl_story),
+ S("19:30",127,"bed3d",45,D.lbl_bed),S("20:15",127,"moon3d",20,D.lbl_sleep)],
+ panel:"vivid",vivid:40,eyes:{on:true,color:"#4FD1FF",bg:"#000000",shape:"round",speed:100,idle:2,night:"off",clock:true}}}
+
+// ---- colour icons: QOI images served by the device at /icons/<id>.qoi (https://qoiformat.org) ----
+function qoiDecode(buf){
+  const d=new Uint8Array(buf),w=(d[4]<<24|d[5]<<16|d[6]<<8|d[7])>>>0,h=(d[8]<<24|d[9]<<16|d[10]<<8|d[11])>>>0;
+  const px=new Uint8ClampedArray(w*h*4),ix=new Uint8Array(256);let r=0,g=0,b=0,a=255,p=14,run=0;
+  for(let i=0;i<px.length;i+=4){
+    if(run>0)run--;else{const b1=d[p++];
+      if(b1==0xFE){r=d[p++];g=d[p++];b=d[p++]}
+      else if(b1==0xFF){r=d[p++];g=d[p++];b=d[p++];a=d[p++]}
+      else{const op=b1&0xC0;
+        if(op==0){const k=(b1&63)*4;r=ix[k];g=ix[k+1];b=ix[k+2];a=ix[k+3]}
+        else if(op==0x40){r=(r+((b1>>4)&3)-2)&255;g=(g+((b1>>2)&3)-2)&255;b=(b+(b1&3)-2)&255}
+        else if(op==0x80){const b2=d[p++],vg=(b1&63)-32;r=(r+vg-8+((b2>>4)&15))&255;g=(g+vg)&255;b=(b+vg-8+(b2&15))&255}
+        else run=b1&63}
+      const k=((r*3+g*5+b*7+a*11)%64)*4;ix[k]=r;ix[k+1]=g;ix[k+2]=b;ix[k+3]=a}
+    px[i]=r;px[i+1]=g;px[i+2]=b;px[i+3]=a}
+  const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').putImageData(new ImageData(px,w,h),0,0);return c}
+const IMG={}, IMG_WAIT={};
+function iconImg(key){  // decoded canvas, or null while loading (redraws when ready)
+  if(IMG[key])return IMG[key];
+  if(!IMG_WAIT[key]){
+    const ic=ICONS[key];
+    IMG_WAIT[key]=(ic.data?Promise.resolve(Uint8Array.from(atob(ic.data),c=>c.charCodeAt(0)).buffer)
+      :fetch('/icons/'+key+'.qoi?v='+VERSION).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}))
+      .then(b=>{IMG[key]=qoiDecode(b);iconsChanged()}).catch(()=>{delete IMG_WAIT[key]});
+  }
+  return null;
+}
+let redrawT=0;
+function iconsChanged(){clearTimeout(redrawT);redrawT=setTimeout(()=>{if(cfg)renderSlots();if(ed){drawPicker();drawBig()}},60)}
+
+// pct: software dimming in % (colour icons are dimmed like the device: every pixel scaled)
+function drawIcon(ctx,key,s,ox,oy,size,pct){
+  if(!ICONS[key])return;
+  const im=iconImg(key);if(!im)return;
+  const t=document.createElement('canvas');t.width=t.height=Math.max(1,Math.round(size));const x=t.getContext('2d');
+  x.imageSmoothingQuality='high';x.drawImage(im,0,0,t.width,t.height);
+  if(cfg&&cfg.vivid>0){const d=x.getImageData(0,0,t.width,t.height);vivPx(d.data,cfg.vivid);x.putImageData(d,0,0)}
+  if(pct!=null&&pct<100){const v=pct<=0?0:Math.max(8,Math.round(256*Math.pow(pct/100,1.2)))/256;
+    x.globalCompositeOperation='source-atop';x.globalAlpha=1-v;x.fillStyle='#000';x.fillRect(0,0,t.width,t.height)}
+  ctx.drawImage(t,ox,oy,size,size);
+}
+// Same software dimming as the firmware (round GC9A01 has no backlight pin)
+function dimHex(h,pct){const s=pct<=0?0:Math.max(8,Math.round(256*Math.pow(pct/100,1.2)));const v=parseInt(h.slice(1),16);
+  const c=x=>(((x*s)>>8)).toString(16).padStart(2,'0');return '#'+c(v>>16&255)+c(v>>8&255)+c(v&255)}
+function dimSlot(s,pct){const o=Object.assign({},s);for(const k of['bg','tx'])o[k]=dimHex(s[k],pct);return o}
+function chord(y){const d=Math.abs(y-120);return d>=120?0:2*Math.sqrt(14400-d*d)-14}
+function fitText(ctx,txt,px,cy,half,k){ctx.font=`bold ${px*k}px "DejaVu Sans",Verdana,sans-serif`;
+  const w=ctx.measureText(txt).width/k,av=chord(cy<120?cy-half:cy+half);const f=w>av?av/w:1;
+  ctx.font=`bold ${px*f*k}px "DejaVu Sans",Verdana,sans-serif`;ctx.fillText(txt,120*k,cy*k)}
+// 240x240 round screen, same layouts as the device (tools/icons_def.py)
+function drawScreen(cv,s0,clock,pct){
+  const s=pct==null?s0:dimSlot(s0,pct);
+  const ctx=cv.getContext('2d'), W=cv.width, k=W/240;
+  ctx.clearRect(0,0,W,W);ctx.save();ctx.beginPath();ctx.arc(W/2,W/2,W/2,0,7);ctx.clip();
+  ctx.fillStyle=s.bg;ctx.fillRect(0,0,W,W);
+  const lab=cfg.showLabel&&s.label, analog=cfg.showClock&&cfg.clockStyle==='analog';
+  if(analog){
+    const cy=lab?108:120,R=lab?88:100,isz=lab?64:72;
+    ctx.strokeStyle=s.tx;ctx.lineWidth=2*k;ctx.beginPath();ctx.arc(120*k,cy*k,R*k,0,7);ctx.stroke();
+    drawIcon(ctx,s.icon,s,(120-isz/2)*k,(cy-isz/2)*k,isz*k,pct);
+    ctx.fillStyle=s.tx;ctx.textAlign='center';ctx.textBaseline='middle';
+    if(lab)fitText(ctx,s.label,20,198,10,k);
+    // simple hands for preview
+    const [hh,mm]=(clock||s.start||'12:00').split(':').map(Number),minh=(mm||0)/60;
+    const ha=((hh%12)+minh)/12*Math.PI*2-Math.PI/2,ma=minh*Math.PI*2-Math.PI/2;
+    ctx.lineWidth=3*k;ctx.beginPath();ctx.moveTo(120*k,cy*k);ctx.lineTo(120*k+Math.cos(ha)*R*0.48*k,cy*k+Math.sin(ha)*R*0.48*k);ctx.stroke();
+    ctx.lineWidth=2*k;ctx.beginPath();ctx.moveTo(120*k,cy*k);ctx.lineTo(120*k+Math.cos(ma)*R*0.72*k,cy*k+Math.sin(ma)*R*0.72*k);ctx.stroke();
+  } else {
+    const L=LAYOUTS[lab&&cfg.showClock?'both':cfg.showClock?'clock':lab?'label':'none'];
+    drawIcon(ctx,s.icon,s,L.icon[0]*k,L.icon[1]*k,L.icon[2]*k,pct);
+    ctx.fillStyle=s.tx;ctx.textAlign='center';ctx.textBaseline='middle';
+    if(lab)fitText(ctx,s.label,20,L.label_y,10,k);
+    if(cfg.showClock)fitText(ctx,clock||s.start,38,L.clock_y,15,k);
+  }
+  ctx.restore();
+}
+function iconName(k){return T('icon_'+k)}
+function daysTxt(m){if(m==127)return T('days_txt_all');if(m==31)return T('days_txt_wd');if(m==96)return T('days_txt_we');
+  return T('days_short').filter((_,i)=>m&(1<<i)).join(', ')||T('days_txt_none')}
+function sorted(){return cfg.slots.map((s,i)=>[s,i]).sort((a,b)=>a[0].start.localeCompare(b[0].start))}
+
+function renderSlots(){
+  const box=document.getElementById('slots'); box.innerHTML='';
+  if(!cfg.slots.length) box.innerHTML=`<div class="card mut">${esc(T('no_slots'))}</div>`;
+  for(const[s,i] of sorted()){
+    const act=status&&status.slot==i, d=document.createElement('div'); d.className='card slot'+(act?' active':'');
+    d.innerHTML=`<canvas width="84" height="84"></canvas><div class="info"><div class="t">${s.start}${act?`<span class="badge">${esc(T('now'))}</span>`:''}</div>
+      <div class="l">${esc(s.label||iconName(s.icon))}</div><div class="d">${esc(daysTxt(s.days))} · ${esc(T('bright_short'))} ${s.bright}%</div></div>
+      <div class="btns"><button onclick="editSlot(${i})">${esc(T('edit'))}</button><button onclick="preview(${i})">${esc(T('show'))}</button><button class="del" onclick="delSlot(${i})">${esc(T('delete'))}</button></div>`;
+    box.appendChild(d); drawScreen(d.querySelector('canvas'),s);
+  }
+  document.getElementById('maxBright').value=cfg.maxBright; upd();
+  document.getElementById('autoDim').checked=cfg.autoDim; document.getElementById('showClock').checked=cfg.showClock;
+  document.getElementById('showLabel').checked=cfg.showLabel;
+  if(cfg.clockStyle==null)cfg.clockStyle='digital';
+  if(cfg.saver==null)cfg.saver=cfg.eyes&&cfg.eyes.on===false?'off':'eyes';
+  document.getElementById('clockStyle').value=cfg.clockStyle;
+  renderEyes();renderColours();
+}
+// ---- collapsible sections: state per browser in localStorage ----
+function initSections(){
+  document.querySelectorAll('.sec').forEach(sec=>{
+    const id=sec.dataset.sec,btn=sec.querySelector('.sech'),body=sec.querySelector('.secb');
+    btn.id='sech-'+id;body.id='secb-'+id;btn.setAttribute('aria-controls',body.id);
+    let st=null;try{st=localStorage.getItem('kc.sec.'+id)}catch(e){}
+    const set=open=>{btn.setAttribute('aria-expanded',open);body.hidden=!open};
+    set(st?st=='1':sec.dataset.open=='1');
+    btn.onclick=()=>{const open=btn.getAttribute('aria-expanded')!='true';set(open);
+      try{localStorage.setItem('kc.sec.'+id,open?'1':'0')}catch(e){}};
+  })}
+initSections();
+// ---- colours: panel profile (GC9A01 gamma) + vivid colours (same math as screen.cpp vivid()) ----
+function vivF(p){return[256+Math.floor(p*154/100),256+Math.floor(p*77/100)]}
+function vivPx(d,p){const[S,C]=vivF(p);if(S==256)return;
+  for(let i=0;i<d.length;i+=4){const a=d[i+3];if(!a)continue;const y=(77*d[i]+150*d[i+1]+29*d[i+2])>>8;
+    for(let k=0;k<3;k++){let v=y+(((d[i+k]-y)*S)>>8);v=127+(((v-127)*C)>>8);d[i+k]=v}}}  // clamped by the array
+function vivHex(h,p){const d=new Uint8ClampedArray([parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16),255]);
+  vivPx(d,p);return'#'+[0,1,2].map(i=>d[i].toString(16).padStart(2,'0')).join('')}
+function vivUpd(){$('vivv').textContent=cfg.vivid+'%'}
+let dispT=0;
+function tryDisplay(){if(demoMode)return;clearTimeout(dispT);dispT=setTimeout(()=>
+  api('/api/display',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({panel:cfg.panel,vivid:cfg.vivid})}).catch(()=>{}),250)}
+function renderColours(){if(cfg.vivid==null)return;$('panel').value=cfg.panel;$('vivid').value=cfg.vivid;vivUpd();
+  $('panelBox').hidden=!!status&&status.panelProfiles===false}
+// ---- eyes screensaver settings + a simple animated preview (the device animation is richer) ----
+const $=id=>document.getElementById(id);
+function renderEyes(){const e=cfg.eyes;if(!e)return;
+  if(cfg.saver==null)cfg.saver=e.on===false?'off':'eyes';
+  e.on=cfg.saver==='eyes';
+  $('saver').value=cfg.saver;$('eyColor').value=e.color;$('eyBg').value=e.bg;$('eyShape').value=e.shape;$('eySpeed').value=e.speed;
+  const sel=$('eyIdle'),v=[1,2,5,10,15,30,60];if(!v.includes(e.idle))v.push(e.idle);
+  sel.innerHTML=v.sort((a,b)=>a-b).map(m=>`<option value="${m}">${m} min</option>`).join('');sel.value=e.idle;
+  $('eyNight').value=e.night;$('eyClock').checked=e.clock;eyUpd();saverUi()}
+function saverUi(){const eyes=cfg.saver==='eyes',on=cfg.saver!=='off';$('eyesOpts').hidden=!eyes;$('eyIdle').hidden=!on;$('eyIdle').previousElementSibling.hidden=!on;$('eyesprev').parentElement.hidden=!(eyes||cfg.saver==='clock')}
+function eyUpd(){$('eySv').textContent=cfg.eyes.speed+'%'}
+let eyT=0,eyLast=0,eyLook=[0,0],eyGoal=[0,0],eyNext=0,eyBlink=-1;
+function eyesAnim(now){requestAnimationFrame(eyesAnim);const cv=$('eyesprev'),e=cfg&&cfg.eyes;if(!e||!cv.offsetParent)return;
+  const dt=Math.min(.1,(now-eyLast)/1000)*e.speed/100;eyLast=now;eyT+=dt;
+  if(eyT>eyNext){eyNext=eyT+1+Math.random()*2.5;eyGoal=[Math.random()*2-1,Math.random()*1.4-.7];if(Math.random()<.5)eyBlink=0}
+  const k=1-Math.exp(-dt*7);eyLook=eyLook.map((v,i)=>v+(eyGoal[i]-v)*k);
+  let open=1;if(eyBlink>=0){eyBlink+=dt/.18;open=Math.abs(1-2*Math.min(1,eyBlink));if(eyBlink>=1)eyBlink=-1}
+  const c=cv.getContext('2d'),cy=e.clock?108:120;c.fillStyle=e.bg;c.fillRect(0,0,240,240);c.fillStyle=vivHex(e.color,cfg.vivid||0);
+  for(const sd of[-1,1]){const w=66,hF=80,h=Math.max(4,hF*open),x=120+sd*50+eyLook[0]*22,y=cy+eyLook[1]*16;
+    c.beginPath();c.roundRect(x-w/2,y-h/2,w,h,Math.min(e.shape=='round'?w/2:14,h/2));c.fill()}
+  if(e.clock){c.font='bold 38px "DejaVu Sans",Verdana,sans-serif';c.textAlign='center';c.textBaseline='middle';
+    c.fillText(status&&status.time||'20:15',120,204)}}
+requestAnimationFrame(eyesAnim);
+async function eyesPreview(){
+  try{await api('/api/eyes-preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg.eyes)});toast(T('eyes_preview_ok'))}
+  catch(e){toast(demoMode?T('no_device'):T('error')+': '+e.message)}}
+function upd(){document.getElementById('maxv').textContent=cfg.maxBright+'%'}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+function editSlot(i){
+  edIdx=i;
+  ed=i<0?Object.assign({start:"20:00",days:127,icon:"moon3d",bright:20,label:""},ICONS.moon3d.defaults):JSON.parse(JSON.stringify(cfg.slots[i]));
+  document.getElementById('edtitle').textContent=T(i<0?'new_slot':'edit_slot');
+  document.getElementById('e_start').value=ed.start;
+  const dd=document.getElementById('e_days'); dd.innerHTML='';
+  T('days_short').forEach((n,b)=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" ${ed.days&(1<<b)?'checked':''}><span>${esc(n)}</span>`;
+    l.querySelector('input').onchange=e=>{ed.days^=(1<<b)};dd.appendChild(l)});
+  const grid=document.getElementById('e_icons'); grid.innerHTML='';
+  for(const key in ICONS){const d=document.createElement('div');d.dataset.k=key;d.innerHTML=`<canvas width="120" height="120"></canvas>${esc(iconName(key))}`;
+    d.onclick=()=>{const keep=ed.icon==key;ed.icon=key;if(!keep)Object.assign(ed,ICONS[key].defaults);syncEd()};
+    grid.appendChild(d)}
+  drawPicker(); syncEd(); document.getElementById('editor').style.display='block';
+}
+function drawPicker(){
+  document.querySelectorAll('.icons div').forEach(d=>{const key=d.dataset.k,c=d.querySelector('canvas'),x=c.getContext('2d'),s=ed.icon==key?ed:ICONS[key].defaults;
+    x.clearRect(0,0,120,120);x.save();x.beginPath();x.arc(60,60,60,0,7);x.clip();x.fillStyle=s.bg;x.fillRect(0,0,120,120);drawIcon(x,key,s,8,8,104);x.restore()});
+}
+function syncEd(){
+  for(const c of['bg','tx'])document.getElementById('e_'+c).value=ed[c];
+  document.getElementById('e_label').value=ed.label||''; document.getElementById('e_bright').value=ed.bright;
+  document.getElementById('e_bv').textContent=ed.bright+'%';
+  document.querySelectorAll('.icons div').forEach(d=>d.classList.toggle('sel',d.dataset.k==ed.icon));
+  drawBig();
+}
+function setDays(m){ed.days=m;document.querySelectorAll('#e_days input').forEach((c,b)=>c.checked=!!(m&(1<<b)))}
+function resetColors(){Object.assign(ed,ICONS[ed.icon].defaults);syncEd()}
+function drawBig(){drawScreen(document.getElementById('bigprev'),ed,null,ed.bright*cfg.maxBright/100)}
+function closeEd(){document.getElementById('editor').style.display='none';ed=null}
+function applyEd(){
+  if(!/^\d\d:\d\d$/.test(ed.start))return toast(T('err_time'));
+  if(!ed.days)return toast(T('err_days'));
+  if(edIdx<0)cfg.slots.push(ed);else cfg.slots[edIdx]=ed;
+  closeEd();renderSlots();toast(T('remember_save'));
+}
+function delSlot(i){if(confirm(T('confirm_delete'))){cfg.slots.splice(i,1);renderSlots()}}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',2500)}
+
+async function api(path,opt){const r=await fetch(path,opt);if(!r.ok)throw new Error(await r.text());return r.json()}
+let demoMode=false;
+async function load(){
+  try{cfg=await api('/api/config')}catch(e){
+    demoMode=true;const q=new URLSearchParams(location.search).get('lang');if(I18N[q])lang=q;cfg=demo()}
+  document.getElementById('ver').textContent=VERSION;
+  applyLang(); tick();
+}
+async function save(){
+  try{cfg=await api('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)});applyLang();toast(T('saved'));tick()}
+  catch(e){toast(T('save_error')+e.message)}
+}
+async function preview(i){
+  try{await api('/api/preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg.slots[i])});toast(T('preview_ok'))}
+  catch(e){toast(T('no_device'))}
+}
+async function wifiReset(){
+  if(!confirm(T('confirm_wifi')))return;
+  try{await api('/api/wifi-reset',{method:'POST'});toast(T('wifi_restart'))}catch(e){toast(T('error'))}
+}
+function showTime(){
+  const sub=document.getElementById('nowsub');
+  if(demoMode){sub.textContent=T('demo_mode');return}
+  if(!status)return;
+  document.getElementById('now').textContent=status.time;
+  let dt='';
+  if(status.date){const[y,m,d]=status.date.split('-');dt=` · ${T('days_short')[status.wday]} ${d}.${m}.${y}`}
+  sub.textContent=T(status.synced?'time_ntp':'time_wait')+dt;
+}
+async function tick(){
+  try{status=await api('/api/status');showTime();renderSlots()}
+  catch(e){const d=new Date();document.getElementById('now').textContent=d.toTimeString().slice(0,5);showTime()}
+}
+load().then(()=>{if(location.hash=='#edit')editSlot(cfg.slots.length-1)}); setInterval(tick,15000);
+</script>
+</body>
+</html>

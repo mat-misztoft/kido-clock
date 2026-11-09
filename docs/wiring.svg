@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 560" width="920" height="560" role="img" aria-label="Kido Clock wiring diagram">
+  <title>Kido Clock wiring — ESP32-C3 SuperMini + GC9A01</title>
+  <desc>Pin map: SCL=GPIO4, SDA=GPIO6, DC=GPIO5, CS=GPIO7, RST=GPIO10, VCC=3V3, GND=GND, button=GPIO1, LDR=GPIO0.</desc>
+  <rect width="920" height="560" fill="#f7f7f5"/>
+  <text x="460" y="36" text-anchor="middle" font-family="system-ui,sans-serif" font-size="20" font-weight="700" fill="#1a1a1a">Kido Clock wiring — ESP32-C3 SuperMini + GC9A01 1.28&quot;</text>
+  <text x="460" y="58" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#666">Red = 3V3 only · Black = GND only · Never wire the button to 3V3</text>
+
+  <!-- ESP32 board -->
+  <rect x="300" y="100" width="160" height="320" rx="14" fill="#2f6b3a" stroke="#111" stroke-width="2"/>
+  <rect x="350" y="410" width="60" height="22" rx="4" fill="#bbb" stroke="#111"/>
+  <text x="380" y="426" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#222">USB-C</text>
+  <text x="380" y="250" text-anchor="middle" font-family="system-ui,sans-serif" font-size="16" font-weight="700" fill="#fff">ESP32-C3</text>
+  <text x="380" y="272" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#dfe">SuperMini</text>
+
+  <!-- Left pins -->
+  <g font-family="ui-monospace,monospace" font-size="12" fill="#fff">
+    <circle cx="308" cy="130" r="5" fill="gold" stroke="#111"/><text x="320" y="134">GPIO0</text>
+    <circle cx="308" cy="165" r="5" fill="gold" stroke="#111"/><text x="320" y="169">GPIO1</text>
+    <circle cx="308" cy="200" r="5" fill="gold" stroke="#111"/><text x="320" y="204">GPIO2</text>
+    <circle cx="308" cy="235" r="5" fill="gold" stroke="#111"/><text x="320" y="239">GPIO3</text>
+    <circle cx="308" cy="270" r="5" fill="gold" stroke="#111"/><text x="320" y="274">GPIO4</text>
+    <circle cx="308" cy="305" r="5" fill="gold" stroke="#111"/><text x="320" y="309">3V3</text>
+    <circle cx="308" cy="340" r="5" fill="gold" stroke="#111"/><text x="320" y="344">GND</text>
+    <circle cx="308" cy="375" r="5" fill="gold" stroke="#111"/><text x="320" y="379">5V</text>
+  </g>
+  <!-- Right pins -->
+  <g font-family="ui-monospace,monospace" font-size="12" fill="#fff" text-anchor="end">
+    <circle cx="452" cy="130" r="5" fill="gold" stroke="#111"/><text x="440" y="134">GPIO21</text>
+    <circle cx="452" cy="165" r="5" fill="gold" stroke="#111"/><text x="440" y="169">GPIO20</text>
+    <circle cx="452" cy="200" r="5" fill="gold" stroke="#111"/><text x="440" y="204">GPIO10</text>
+    <circle cx="452" cy="235" r="5" fill="gold" stroke="#111"/><text x="440" y="239">GPIO9</text>
+    <circle cx="452" cy="270" r="5" fill="gold" stroke="#111"/><text x="440" y="274">GPIO8</text>
+    <circle cx="452" cy="305" r="5" fill="gold" stroke="#111"/><text x="440" y="309">GPIO7</text>
+    <circle cx="452" cy="340" r="5" fill="gold" stroke="#111"/><text x="440" y="344">GPIO6</text>
+    <circle cx="452" cy="375" r="5" fill="gold" stroke="#111"/><text x="440" y="379">GPIO5</text>
+  </g>
+
+  <!-- TFT module -->
+  <rect x="620" y="150" width="70" height="250" rx="10" fill="#1a4f9c" stroke="#111" stroke-width="2"/>
+  <circle cx="780" cy="275" r="95" fill="#1a4f9c" stroke="#111" stroke-width="2"/>
+  <circle cx="780" cy="275" r="78" fill="#0b1030" stroke="#888"/>
+  <text x="780" y="265" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#FFE08A">GC9A01</text>
+  <text x="780" y="285" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" fill="#FFE08A">1.28&quot; 240×240</text>
+  <text x="780" y="305" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#b8c7e0">round</text>
+
+  <g font-family="ui-monospace,monospace" font-size="12" fill="#fff">
+    <circle cx="630" cy="175" r="5" fill="gold" stroke="#111"/><text x="642" y="179">RST</text>
+    <circle cx="630" cy="210" r="5" fill="gold" stroke="#111"/><text x="642" y="214">CS</text>
+    <circle cx="630" cy="245" r="5" fill="gold" stroke="#111"/><text x="642" y="249">DC</text>
+    <circle cx="630" cy="280" r="5" fill="gold" stroke="#111"/><text x="642" y="284">SDA</text>
+    <circle cx="630" cy="315" r="5" fill="gold" stroke="#111"/><text x="642" y="319">SCL</text>
+    <circle cx="630" cy="350" r="5" fill="gold" stroke="#111"/><text x="642" y="354">GND</text>
+    <circle cx="630" cy="385" r="5" fill="gold" stroke="#111"/><text x="642" y="389">VCC</text>
+  </g>
+
+  <!-- Rails -->
+  <line x1="70" y1="90" x2="70" y2="460" stroke="#cc0000" stroke-width="4"/>
+  <text x="70" y="80" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="700" fill="#cc0000">3V3</text>
+  <line x1="40" y1="90" x2="40" y2="460" stroke="#111" stroke-width="4"/>
+  <text x="40" y="80" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="700" fill="#111">GND</text>
+
+  <!-- Power wires -->
+  <path d="M308 305 H70" stroke="#cc0000" stroke-width="2.5" fill="none"/>
+  <path d="M308 340 H40" stroke="#111" stroke-width="2.5" fill="none"/>
+  <path d="M70 90 H630 V385" stroke="#cc0000" stroke-width="2.2" fill="none"/>
+  <path d="M40 460 H630 V350" stroke="#111" stroke-width="2.2" fill="none"/>
+
+  <!-- Signal wires -->
+  <path d="M452 375 H560 V245 H630" stroke="#8e44ad" stroke-width="2.2" fill="none"/>
+  <text x="560" y="238" font-family="system-ui,sans-serif" font-size="11" fill="#8e44ad">DC ← GPIO5</text>
+  <path d="M452 340 H575 V280 H630" stroke="#27ae60" stroke-width="2.2" fill="none"/>
+  <text x="575" y="273" font-family="system-ui,sans-serif" font-size="11" fill="#27ae60">SDA ← GPIO6</text>
+  <path d="M452 305 H545 V210 H630" stroke="#8d6e63" stroke-width="2.2" fill="none"/>
+  <text x="545" y="203" font-family="system-ui,sans-serif" font-size="11" fill="#8d6e63">CS ← GPIO7</text>
+  <path d="M452 200 H530 V175 H630" stroke="#7f8c8d" stroke-width="2.2" fill="none"/>
+  <text x="530" y="168" font-family="system-ui,sans-serif" font-size="11" fill="#7f8c8d">RST ← GPIO10</text>
+  <path d="M308 270 H250 V490 H600 V315 H630" stroke="#2980b9" stroke-width="2.2" fill="none"/>
+  <text x="430" y="505" font-family="system-ui,sans-serif" font-size="11" fill="#2980b9">SCL ← GPIO4</text>
+
+  <!-- Button -->
+  <rect x="100" y="145" width="90" height="50" rx="8" fill="#eee" stroke="#111" stroke-width="1.5"/>
+  <text x="145" y="175" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#222">Button</text>
+  <path d="M308 165 H190" stroke="#e6e6e6" stroke-width="3" stroke-linecap="round"/>
+  <path d="M190 165 H190 145 V195 H40" stroke="#111" stroke-width="2.2" fill="none"/>
+  <text x="145" y="215" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#444">GPIO1 ↔ GND</text>
+
+  <!-- LDR optional -->
+  <rect x="100" y="250" width="90" height="50" rx="8" fill="#fff8e7" stroke="#111" stroke-width="1.5"/>
+  <text x="145" y="272" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#222">LDR (opt.)</text>
+  <text x="145" y="288" text-anchor="middle" font-family="system-ui,sans-serif" font-size="10" fill="#666">+ 10 kΩ</text>
+  <path d="M308 130 H190 V250" stroke="#f39c12" stroke-width="2.2" fill="none"/>
+  <path d="M145 300 V340 H40" stroke="#111" stroke-width="2" fill="none"/>
+  <path d="M145 250 V230 H70" stroke="#cc0000" stroke-width="2" fill="none"/>
+
+  <!-- Legend table -->
+  <rect x="100" y="380" width="180" height="140" rx="8" fill="#fff" stroke="#ddd"/>
+  <text x="110" y="402" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#111">Pin map</text>
+  <g font-family="ui-monospace,monospace" font-size="11" fill="#333">
+    <text x="110" y="422">SCL  → GPIO4</text>
+    <text x="110" y="438">SDA  → GPIO6</text>
+    <text x="110" y="454">DC   → GPIO5</text>
+    <text x="110" y="470">CS   → GPIO7</text>
+    <text x="110" y="486">RST  → GPIO10</text>
+    <text x="110" y="502">VCC  → 3V3 · GND → GND</text>
+  </g>
+</svg>
